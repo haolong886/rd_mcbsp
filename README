@@ -1,0 +1,24 @@
+*****************************************************
+V1.00
+2011.11.15
+1. update sdma_buffer_queue.h
+	use new link table named loop_buffer, the node will not be freed after get_loop_buffer. All nodes are loop linking.
+2. update dma_irq_handler
+	driver switch buffer directly and don't care if app has processed buffer. After update dma_irq_handler, this irq handler
+	process time reduced.
+3. delete some no used args in mcbsp_dev
+4. delete some no used functions
+5. add i2c protocal port(SLK, SDA) driver, use GPIO161(SDA) and GPIO162(SLK)
+6. add ioctl cmd GET_REG_STATUS, SET_REG (not complete, no test)
+*****************************************************
+2011.11.16
+1. add set_reg(), read_reg()
+2. complete ioctl cmd GET_REG_STATUS, SET_REG
+3. update all function in rd_gpio.h
+*****************************************************
+2011.11.25
+1. update dma_irq_handler(), change dma destination by a simple way to reduce irq handle time
+2. add var opend in mcbsp_dev to advoid open mcbsp 2 or more times at the same time
+	initialize this var in mcbsp_init(), check it in mcbsp_open(), reset it in mcbsp_release()
+
+*****************************************************

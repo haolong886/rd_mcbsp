@@ -1,0 +1,110 @@
+*****************************************************
+V0.01
+2011.11.15
+1. update sdma_buffer_queue.h
+	use new link table named loop_buffer, the node will not be freed after get_loop_buffer. All nodes are loop linking.
+2. update dma_irq_handler
+	driver switch buffer directly and don't care if app has processed buffer. After update dma_irq_handler, this irq handler
+	process time reduced.
+3. delete some no used args in mcbsp_dev
+4. delete some no used functions
+5. add i2c protocal port(SLK, SDA) driver, use GPIO161(SDA) and GPIO162(SLK)
+6. add ioctl cmd GET_REG_STATUS, SET_REG (not complete, no test)
+*****************************************************
+V0.02
+2011.11.16
+1. add set_reg(), read_reg()
+2. complete ioctl cmd GET_REG_STATUS, SET_REG
+3. update all function in rd_gpio.h
+*****************************************************
+V0.03
+2011.11.25
+1. update dma_irq_handler(), change dma destination by a simple way to reduce irq handle time
+2. add var opend in mcbsp_dev to advoid open mcbsp 2 or more times at the same time
+	initialize this var in mcbsp_init(), check it in mcbsp_open(), reset it in mcbsp_release()
+
+*****************************************************
+V0.04
+2011.11.30
+1. use dma buffer size to set dma block size
+2. add ioctl cmd MCBSP_IOC_MCBSPDMA_COMPLETE, use this cmd after setting all dma buffer. 
+    use MCBSP_IOC_MCBSPDMA_START cmd to start mcbsp and dma
+
+*****************************************************
+V0.05
+2011.12.2
+1. use 4 DMAs channel to compose of loop DMA channel link
+	a buffer Divided into a top part and a botton part, destination of channel 1 is set to top part, 
+	destination of channel 2 is set to botton part. The other buffer is divided for channel3 and channel 4 as well.
+	only channel 2 and channel 4 will occur intterupts when channel 2 and channel 4 block transfer completed.
+	Time of DMA irq handler will be more relaxd by this way and McBSP receive will not overflow.
+2. use kernel API omap_request_dma to request DMA channel and use omap_free_dma to free DMA channel
+	This way is to avoid DMA channel of mcbsp conflict with OS' dma resource
+known issue:
+1. occour warning: Spurious irq 95: 0xffffffdf, please flush posted write for irq 12
+*****************************************************
+V0.06
+2011.12.05
+1. disable allocated dma channel irq on SDMA_IRQ_L0
+	because system initialize all dma channel irq on SDMA_IRQ_L0, but we set allocated channel irq on SDMA_IRQ_L1.
+	So, if we didn't disable allocated channel irq on SDMA_IRQ_L0, there will be a dma irq warning "Spurious DMA irq"
+	on SDMA_IRQ_L0
+	fixed: dma warning: "Spurious DMA irq"
+2. update mcbsp_disable_irq(), disable mcbsp irq
+3. ioremap mcbsp base addr, dma base addr , etc. Store them in mcbsp_devp, update dma_lib.c, dma_lib.h, control.h, dma.h,
+	mcbsp_module.c, dma_lib.c, operation.h
+known issue:
+1. occour warning: Spurious irq 95: 0xffffffdf, please flush posted write for irq 13
+				Spurious irq 95: 0xffffffdf, please flush posted write for irq 95
+*****************************************************
+v0.07
+2011.12.06
+1. read back dma interrupt status register in dma irq handler
+2. set DMA write as non-posted write
+3. use printk_ratelimit() in mcbsp_irq_handler() to protect from exhausting cpu time
+4. remove compile warning
+5. remove get_reg() kmalloc, remove mcbsp_ioctl() GET_REG kmalloc()
+6. rename file, move all head file(xx.h) codes to c file(xx.c)
+        not complete
+     
+fixed:
+1. no spurious irq warning
+*****************************************************
+v0.08
+2011.12.07
+1. complete rename file, update xx.h
+2. use two dma channel to transfer mcbsp data
+*****************************************************
+v0.09
+2011.12.8
+1. in dma_init(), configure DMA_GCR and DMA_OCP_SYSCONFIG
+	otherwise, close and open mcbsp Frequently will occur mcbsp receive buffer 
+	flow.
+2. add ioctl cmd MCBSP_IOC_RESET_BUFFER
+*****************************************************
+v0.10
+2011.12.21
+1. add write_table2fpga()
+2. add mcbsp_write()
+*****************************************************
+v0.11
+2011.12.27
+1. add dma_des_ready_flag to avoid call MCBSP_IOC_MCBSPDMA_START before call MCBSP_IOC_MCBSPDMA_COMPLETE
+2. add to check buffer size when user call MCBSP_IOC_SET_DMA_DES
+*****************************************************
+v0.12
+2011.12.29
+1. check dma_buffer_block_size % 256
+2. in file "rd_gpio_i2c.c" use I2C_DBG() to print debug msg
+3. in file "rd_mcbsp_module.c" use MCBSP_DBG() to print debug msg
+*****************************************************
+v0.13
+2012.01.04
+1. check dma_buffer_head < 0x8000000
+*****************************************************
+v0.14
+2012.04.12
+1. change i2c sda to GPIO_158
+2. change i2c scl to GPIO_161
+3. remove i2c dir io
+*****************************************************

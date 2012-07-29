@@ -1,0 +1,1 @@
+cmd_/media/rootfs_backup/haolong/modules/MCBSP_RX_DMA_1/mcbsp.o := arm-none-linux-gnueabi-ld -EL    -r -o /media/rootfs_backup/haolong/modules/MCBSP_RX_DMA_1/mcbsp.o /media/rootfs_backup/haolong/modules/MCBSP_RX_DMA_1/McBSP_RX_DMA_1.o /media/rootfs_backup/haolong/modules/MCBSP_RX_DMA_1/mcbsp_lib.o /media/rootfs_backup/haolong/modules/MCBSP_RX_DMA_1/dma_lib.o 
